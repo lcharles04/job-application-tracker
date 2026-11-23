@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ job.job_title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a class="back" href="{{ url_for('jobs') }}">&larr; Jobs</a>
+    <h1>{{ job.job_title }}</h1>
+    <p class="muted">at <a href="{{ url_for('company_detail', company_id=job.company_id) }}">{{ job.company_name }}</a></p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('application_new', job_id=job.job_id) }}">+ Apply / Log Application</a>
+    <a class="btn btn-ghost" href="{{ url_for('job_edit', job_id=job.job_id) }}">Edit</a>
+    <a class="btn btn-danger-ghost" href="{{ url_for('job_delete', job_id=job.job_id) }}">Delete</a>
+  </div>
+</div>
+
+<div class="card">
+  <dl class="details">
+    <dt>Type</dt><dd>{{ job.job_type or 'Not set' }}</dd>
+    <dt>Salary</dt><dd>{% if job.salary_min or job.salary_max %}{{ job.salary_min | money }}{% if job.salary_max %} &ndash; {{ job.salary_max | money }}{% endif %}{% else %}Not listed{% endif %}</dd>
+    <dt>Posted</dt><dd>{{ job.date_posted | datefmt or 'Not set' }}</dd>
+    <dt>Posting</dt><dd>{% if job.job_url %}<a href="{{ job.job_url }}" target="_blank" rel="noopener">{{ job.job_url }}</a>{% else %}Not set{% endif %}</dd>
+    <dt>Requirements</dt><dd>{% for s in job.requirements %}<span class="chip">{{ s }}</span>{% else %}None listed{% endfor %}</dd>
+  </dl>
+</div>
+
+<section class="card">
+  <h2>Applications ({{ applications|length }})</h2>
+  {% if applications %}
+  <table>
+    <thead><tr><th>Date</th><th>Status</th><th>Resume</th><th>Interviews</th></tr></thead>
+    <tbody>
+    {% for a in applications %}
+      <tr>
+        <td><a href="{{ url_for('application_detail', application_id=a.application_id) }}">{{ a.application_date | datefmt }}</a></td>
+        <td><span class="badge status-{{ a.status|lower }}">{{ a.status }}</span></td>
+        <td>{{ a.resume_version or '' }}</td>
+        <td>{{ a.interview_data|length }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">You haven't applied to this job yet.</p>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Application{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a class="back" href="{{ url_for('applications') }}">&larr; Applications</a>
+    <h1>{{ app_row.job_title }}</h1>
+    <p class="muted">at <a href="{{ url_for('company_detail', company_id=app_row.company_id) }}">{{ app_row.company_name }}</a>
+      &middot; <a href="{{ url_for('job_detail', job_id=app_row.job_id) }}">view job</a></p>
+  </div>
+  <div class="actions">
+    <a class="btn btn-ghost" href="{{ url_for('application_edit', application_id=app_row.application_id) }}">Edit</a>
+    <a class="btn btn-danger-ghost" href="{{ url_for('application_delete', application_id=app_row.application_id) }}">Delete</a>
+  </div>
+</div>
+
+<div class="card">
+  <dl class="details">
+    <dt>Status</dt><dd><span class="badge status-{{ app_row.status|lower }}">{{ app_row.status }}</span></dd>
+    <dt>Applied</dt><dd>{{ app_row.application_date | datefmt }}</dd>
+    <dt>Resume</dt><dd>{{ app_row.resume_version or 'Not set' }}</dd>
+    <dt>Cover letter</dt><dd>{{ 'Sent' if app_row.cover_letter_sent else 'Not sent' }}</dd>
+  </dl>
+</div>
+
+<section class="card">
+  <h2>Interview rounds ({{ app_row.interview_data|length }})</h2>
+  {% if app_row.interview_data %}
+    <ol class="timeline">
+    {% for r in app_row.interview_data %}
+      <li>
+        <span class="tl-date">{{ r.date | datefmt }}</span>
+        <strong>{{ r.round }}</strong>{% if r.interviewer %} with {{ r.interviewer }}{% endif %}
+        {% if r.notes %}<p class="muted">{{ r.notes }}</p>{% endif %}
+      </li>
+    {% endfor %}
+    </ol>
+  {% else %}
+    <p class="muted">No interviews logged. <a href="{{ url_for('application_edit', application_id=app_row.application_id) }}">Add one.</a></p>
+  {% endif %}
+</section>
+{% endblock %}

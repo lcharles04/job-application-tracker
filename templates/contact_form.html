@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if contact else 'Add' }} Contact{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{{ 'Edit' if contact else 'Add' }} Contact</h1></div>
+{% if not companies %}
+  <div class="card narrow">
+    <p>You need at least one company before adding a contact.</p>
+    <a class="btn" href="{{ url_for('company_new') }}">Add a Company</a>
+  </div>
+{% else %}
+<form method="post" class="card form narrow">
+  <div class="row">
+    <label>Name <span class="req">*</span>
+      <input type="text" name="contact_name" value="{{ form.get('contact_name') or '' }}" maxlength="100" required>
+    </label>
+    <label>Company <span class="req">*</span>
+      <select name="company_id" required>
+        <option value="">Select a company</option>
+        {% for c in companies %}
+          <option value="{{ c.company_id }}" {{ 'selected' if (form.get('company_id')|string) == (c.company_id|string) }}>{{ c.company_name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <label>Title
+    <input type="text" name="title" value="{{ form.get('title') or '' }}" maxlength="100" placeholder="e.g. Technical Recruiter">
+  </label>
+  <div class="row">
+    <label>Email
+      <input type="email" name="email" value="{{ form.get('email') or '' }}" maxlength="100">
+    </label>
+    <label>Phone
+      <input type="tel" name="phone" value="{{ form.get('phone') or '' }}" maxlength="20" placeholder="305-555-0100">
+    </label>
+  </div>
+  <label>LinkedIn URL
+    <input type="url" name="linkedin_url" value="{{ form.get('linkedin_url') or '' }}" maxlength="200" placeholder="https://www.linkedin.com/in/...">
+  </label>
+  <label>Notes
+    <textarea name="notes" rows="3">{{ form.get('notes') or '' }}</textarea>
+  </label>
+  <div class="actions">
+    <button type="submit" class="btn">{{ 'Save Changes' if contact else 'Add Contact' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('contacts') }}">Cancel</a>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

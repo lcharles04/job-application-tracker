@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Contacts{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Contacts</h1>
+  <a class="btn" href="{{ url_for('contact_new') }}">+ Add Contact</a>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search name, title or company">
+  <button class="btn btn-ghost" type="submit">Search</button>
+  {% if search %}<a href="{{ url_for('contacts') }}">Clear</a>{% endif %}
+</form>
+
+<div class="card flush">
+{% if contacts %}
+  <table>
+    <thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>LinkedIn</th><th>Notes</th><th></th></tr></thead>
+    <tbody>
+    {% for k in contacts %}
+      <tr>
+        <td><strong>{{ k.contact_name }}</strong>{% if k.title %}<br><span class="muted small">{{ k.title }}</span>{% endif %}</td>
+        <td><a href="{{ url_for('company_detail', company_id=k.company_id) }}">{{ k.company_name }}</a></td>
+        <td>{% if k.email %}<a href="mailto:{{ k.email }}">{{ k.email }}</a>{% endif %}</td>
+        <td class="nowrap">{{ k.phone or '' }}</td>
+        <td>{% if k.linkedin_url %}<a href="{{ k.linkedin_url }}" target="_blank" rel="noopener">Profile</a>{% endif %}</td>
+        <td class="small">{{ k.notes or '' }}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('contact_edit', contact_id=k.contact_id) }}">Edit</a>
+          <a class="danger" href="{{ url_for('contact_delete', contact_id=k.contact_id) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty">No contacts found. <a href="{{ url_for('contact_new') }}">Add one.</a></p>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Companies{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Companies</h1>
+  <a class="btn" href="{{ url_for('company_new') }}">+ Add Company</a>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search name, industry or city">
+  <button class="btn btn-ghost" type="submit">Search</button>
+  {% if search %}<a href="{{ url_for('companies') }}">Clear</a>{% endif %}
+</form>
+
+<div class="card flush">
+{% if companies %}
+  <table>
+    <thead><tr><th>Company</th><th>Industry</th><th>Location</th><th class="num-col">Jobs</th><th class="num-col">Contacts</th><th></th></tr></thead>
+    <tbody>
+    {% for c in companies %}
+      <tr>
+        <td><a href="{{ url_for('company_detail', company_id=c.company_id) }}"><strong>{{ c.company_name }}</strong></a>
+          {% if c.website %}<br><a class="muted small" href="{{ c.website }}" target="_blank" rel="noopener">{{ c.website }}</a>{% endif %}</td>
+        <td>{{ c.industry or '' }}</td>
+        <td>{{ [c.city, c.state] | select | join(', ') }}</td>
+        <td class="num-col">{{ c.job_count }}</td>
+        <td class="num-col">{{ c.contact_count }}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('company_edit', company_id=c.company_id) }}">Edit</a>
+          <a class="danger" href="{{ url_for('company_delete', company_id=c.company_id) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty">{% if search %}No companies match "{{ search }}".{% else %}No companies yet. <a href="{{ url_for('company_new') }}">Add one.</a>{% endif %}</p>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ company.company_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a class="back" href="{{ url_for('companies') }}">&larr; Companies</a>
+    <h1>{{ company.company_name }}</h1>
+  </div>
+  <div class="actions">
+    <a class="btn btn-ghost" href="{{ url_for('company_edit', company_id=company.company_id) }}">Edit</a>
+    <a class="btn btn-danger-ghost" href="{{ url_for('company_delete', company_id=company.company_id) }}">Delete</a>
+  </div>
+</div>
+
+<div class="card">
+  <dl class="details">
+    <dt>Industry</dt><dd>{{ company.industry or 'Not set' }}</dd>
+    <dt>Location</dt><dd>{{ [company.city, company.state] | select | join(', ') or 'Not set' }}</dd>
+    <dt>Website</dt><dd>{% if company.website %}<a href="{{ company.website }}" target="_blank" rel="noopener">{{ company.website }}</a>{% else %}Not set{% endif %}</dd>
+    <dt>Notes</dt><dd class="pre">{{ company.notes or 'None' }}</dd>
+  </dl>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head">
+      <h2>Jobs ({{ jobs|length }})</h2>
+      <a href="{{ url_for('job_new', company_id=company.company_id) }}">+ Add job</a>
+    </div>
+    {% if jobs %}
+      <ul class="plain-list">
+      {% for j in jobs %}
+        <li><a href="{{ url_for('job_detail', job_id=j.job_id) }}">{{ j.job_title }}</a>
+          <span class="muted small">{{ j.job_type or '' }}{% if j.application_count %} &middot; {{ j.application_count }} application(s){% endif %}</span></li>
+      {% endfor %}
+      </ul>
+    {% else %}<p class="muted">No jobs yet.</p>{% endif %}
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Contacts ({{ contacts|length }})</h2>
+      <a href="{{ url_for('contact_new', company_id=company.company_id) }}">+ Add contact</a>
+    </div>
+    {% if contacts %}
+      <ul class="plain-list">
+      {% for k in contacts %}
+        <li><strong>{{ k.contact_name }}</strong> <span class="muted small">{{ k.title or '' }}</span>
+          {% if k.email %}<br><a class="small" href="mailto:{{ k.email }}">{{ k.email }}</a>{% endif %}</li>
+      {% endfor %}
+      </ul>
+    {% else %}<p class="muted">No contacts yet.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

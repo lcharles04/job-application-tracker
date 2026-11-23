@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if company else 'Add' }} Company{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{{ 'Edit' if company else 'Add' }} Company</h1></div>
+<form method="post" class="card form narrow">
+  <label>Company name <span class="req">*</span>
+    <input type="text" name="company_name" value="{{ form.get('company_name') or '' }}" maxlength="100" required>
+  </label>
+  <div class="row">
+    <label>Industry
+      <input type="text" name="industry" value="{{ form.get('industry') or '' }}" maxlength="50">
+    </label>
+    <label>Website
+      <input type="url" name="website" value="{{ form.get('website') or '' }}" maxlength="200" placeholder="https://">
+    </label>
+  </div>
+  <div class="row">
+    <label>City
+      <input type="text" name="city" value="{{ form.get('city') or '' }}" maxlength="50">
+    </label>
+    <label>State
+      <input type="text" name="state" value="{{ form.get('state') or '' }}" maxlength="50">
+    </label>
+  </div>
+  <label>Notes
+    <textarea name="notes" rows="4">{{ form.get('notes') or '' }}</textarea>
+  </label>
+  <div class="actions">
+    <button type="submit" class="btn">{{ 'Save Changes' if company else 'Add Company' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('company_detail', company_id=company.company_id) if company else url_for('companies') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

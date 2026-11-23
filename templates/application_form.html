@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if application else 'Add' }} Application{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{{ 'Edit' if application else 'Add' }} Application</h1></div>
+{% if not jobs %}
+  <div class="card narrow">
+    <p>You need at least one job before logging an application.</p>
+    <a class="btn" href="{{ url_for('job_new') }}">Add a Job</a>
+  </div>
+{% else %}
+{% set cl = form.get('cover_letter_sent') %}
+<form method="post" class="card form">
+  <div class="row">
+    <label>Job <span class="req">*</span>
+      <select name="job_id" required>
+        <option value="">Select a job</option>
+        {% for j in jobs %}
+          <option value="{{ j.job_id }}" {{ 'selected' if (form.get('job_id')|string) == (j.job_id|string) }}>{{ j.company_name }}: {{ j.job_title }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Application date <span class="req">*</span>
+      <input type="date" name="application_date" value="{{ form.get('application_date') or '' }}" required>
+    </label>
+  </div>
+  <div class="row">
+    <label>Status
+      <select name="status">
+        {% for s in statuses %}<option value="{{ s }}" {{ 'selected' if form.get('status') == s }}>{{ s }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Resume version
+      <input type="text" name="resume_version" value="{{ form.get('resume_version') or '' }}" maxlength="50" placeholder="e.g. v3-security">
+    </label>
+  </div>
+  <label class="check">
+    <input type="checkbox" name="cover_letter_sent" {{ 'checked' if cl in (true, 'on', 1) }}> Cover letter sent
+  </label>
+
+  <fieldset>
+    <legend>Interview rounds</legend>
+    <p class="hint">Stored in the <code>interview_data</code> JSON column. Leave a row blank to skip it. Save to get more empty rows.</p>
+    <table class="iv-table">
+      <thead><tr><th>Date</th><th>Round</th><th>Interviewer</th><th>Notes</th></tr></thead>
+      <tbody>
+      {% for r in rounds %}
+        <tr>
+          <td><input type="date" name="iv_date" value="{{ r.get('date', '') }}"></td>
+          <td><input type="text" name="iv_round" value="{{ r.get('round', '') }}" maxlength="50" placeholder="Phone Screen"></td>
+          <td><input type="text" name="iv_interviewer" value="{{ r.get('interviewer', '') }}" maxlength="100"></td>
+          <td><input type="text" name="iv_notes" value="{{ r.get('notes', '') }}" maxlength="500"></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </fieldset>
+
+  <div class="actions">
+    <button type="submit" class="btn">{{ 'Save Changes' if application else 'Add Application' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('application_detail', application_id=application.application_id) if application else url_for('applications') }}">Cancel</a>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

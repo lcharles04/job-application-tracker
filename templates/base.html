@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Job Tracker{% endblock %} | Job Application Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">Job<span>Tracker</span></a>
+    {% set ep = request.endpoint or '' %}
+    <nav>
+      <a href="{{ url_for('dashboard') }}" class="{{ 'active' if ep == 'dashboard' }}">Dashboard</a>
+      <a href="{{ url_for('companies') }}" class="{{ 'active' if ep.startswith('compan') }}">Companies</a>
+      <a href="{{ url_for('jobs') }}" class="{{ 'active' if ep.startswith('job') and ep != 'job_match' }}">Jobs</a>
+      <a href="{{ url_for('applications') }}" class="{{ 'active' if ep.startswith('application') }}">Applications</a>
+      <a href="{{ url_for('contacts') }}" class="{{ 'active' if ep.startswith('contact') }}">Contacts</a>
+      <a href="{{ url_for('job_match') }}" class="{{ 'active' if ep == 'job_match' }}">Job Match</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">Job Application Tracker &middot; COP 4751 &middot; {{ current_year }}</footer>
+</body>
+</html>

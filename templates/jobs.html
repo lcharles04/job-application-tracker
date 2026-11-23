@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Jobs{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Jobs</h1>
+  <a class="btn" href="{{ url_for('job_new') }}">+ Add Job</a>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search title or company">
+  <select name="type">
+    <option value="">All types</option>
+    {% for t in job_types %}<option value="{{ t }}" {{ 'selected' if t == job_type }}>{{ t }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-ghost" type="submit">Filter</button>
+  {% if search or job_type %}<a href="{{ url_for('jobs') }}">Clear</a>{% endif %}
+</form>
+
+<div class="card flush">
+{% if jobs %}
+  <table>
+    <thead><tr><th>Job</th><th>Company</th><th>Type</th><th>Salary</th><th>Requirements</th><th>Posted</th><th></th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      <tr>
+        <td><a href="{{ url_for('job_detail', job_id=j.job_id) }}"><strong>{{ j.job_title }}</strong></a></td>
+        <td><a href="{{ url_for('company_detail', company_id=j.company_id) }}">{{ j.company_name }}</a></td>
+        <td>{{ j.job_type or '' }}</td>
+        <td class="nowrap">{% if j.salary_min or j.salary_max %}{{ j.salary_min | money }}{% if j.salary_max %} &ndash; {{ j.salary_max | money }}{% endif %}{% endif %}</td>
+        <td>{% for s in j.requirements %}<span class="chip">{{ s }}</span>{% endfor %}</td>
+        <td class="nowrap">{{ j.date_posted | datefmt }}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('job_edit', job_id=j.job_id) }}">Edit</a>
+          <a class="danger" href="{{ url_for('job_delete', job_id=j.job_id) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty">No jobs found. <a href="{{ url_for('job_new') }}">Add one.</a></p>
+{% endif %}
+</div>
+{% endblock %}

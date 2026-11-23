@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if job else 'Add' }} Job{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{{ 'Edit' if job else 'Add' }} Job</h1></div>
+{% if not companies %}
+  <div class="card narrow">
+    <p>You need at least one company before adding a job.</p>
+    <a class="btn" href="{{ url_for('company_new') }}">Add a Company</a>
+  </div>
+{% else %}
+<form method="post" class="card form narrow">
+  <label>Company <span class="req">*</span>
+    <select name="company_id" required>
+      <option value="">Select a company</option>
+      {% for c in companies %}
+        <option value="{{ c.company_id }}" {{ 'selected' if (form.get('company_id')|string) == (c.company_id|string) }}>{{ c.company_name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <div class="row">
+    <label>Job title <span class="req">*</span>
+      <input type="text" name="job_title" value="{{ form.get('job_title') or '' }}" maxlength="100" required>
+    </label>
+    <label>Job type
+      <select name="job_type">
+        <option value="">Not specified</option>
+        {% for t in job_types %}<option value="{{ t }}" {{ 'selected' if form.get('job_type') == t }}>{{ t }}</option>{% endfor %}
+      </select>
+    </label>
+  </div>
+  <div class="row">
+    <label>Minimum salary ($)
+      <input type="number" name="salary_min" min="0" step="1000" value="{{ form.get('salary_min') if form.get('salary_min') is not none else '' }}">
+    </label>
+    <label>Maximum salary ($)
+      <input type="number" name="salary_max" min="0" step="1000" value="{{ form.get('salary_max') if form.get('salary_max') is not none else '' }}">
+    </label>
+  </div>
+  <div class="row">
+    <label>Job URL
+      <input type="url" name="job_url" value="{{ form.get('job_url') or '' }}" maxlength="300" placeholder="https://">
+    </label>
+    <label>Date posted
+      <input type="date" name="date_posted" value="{{ form.get('date_posted') or '' }}">
+    </label>
+  </div>
+  <label>Required skills
+    <textarea name="requirements" rows="3" placeholder="Python, SQL, Flask">{{ form.get('requirements') or '' }}</textarea>
+    <span class="hint">Separate skills with commas. Saved as a JSON array and used by Job Match.</span>
+  </label>
+  <div class="actions">
+    <button type="submit" class="btn">{{ 'Save Changes' if job else 'Add Job' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('job_detail', job_id=job.job_id) if job else url_for('jobs') }}">Cancel</a>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

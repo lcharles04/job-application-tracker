@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Dashboard</h1>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('application_new') }}">+ New Application</a>
+    <a class="btn btn-ghost" href="{{ url_for('job_match') }}">Find Matching Jobs</a>
+  </div>
+</div>
+
+<section class="stats">
+  <a class="stat" href="{{ url_for('applications') }}"><span class="num">{{ stats.applications }}</span><span class="label">Applications</span></a>
+  <a class="stat" href="{{ url_for('applications') }}"><span class="num">{{ stats.active }}</span><span class="label">Active</span></a>
+  <div class="stat"><span class="num">{{ stats.interviews }}</span><span class="label">Interview rounds</span></div>
+  <div class="stat"><span class="num">{{ stats.response_rate }}%</span><span class="label">Response rate</span></div>
+  <a class="stat" href="{{ url_for('jobs') }}"><span class="num">{{ stats.jobs }}</span><span class="label">Jobs tracked</span></a>
+  <a class="stat" href="{{ url_for('companies') }}"><span class="num">{{ stats.companies }}</span><span class="label">Companies</span></a>
+  <a class="stat" href="{{ url_for('contacts') }}"><span class="num">{{ stats.contacts }}</span><span class="label">Contacts</span></a>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Applications by status</h2>
+    {% set max_count = (by_status.values() | max) or 1 %}
+    <ul class="bars">
+      {% for status, count in by_status.items() %}
+        <li>
+          <a href="{{ url_for('applications', status=status) }}" class="bar-label">{{ status }}</a>
+          <span class="bar-track"><span class="bar-fill status-bg-{{ status|lower }}" style="width: {{ (count / max_count * 100) | round }}%"></span></span>
+          <span class="bar-count">{{ count }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Upcoming interviews</h2>
+    {% if upcoming %}
+      <table>
+        <thead><tr><th>Date</th><th>Round</th><th>Job</th></tr></thead>
+        <tbody>
+        {% for iv in upcoming %}
+          <tr>
+            <td>{{ iv.date | datefmt }}</td>
+            <td>{{ iv.round }}</td>
+            <td><a href="{{ url_for('application_detail', application_id=iv.application_id) }}">{{ iv.job_title }}</a><br><small class="muted">{{ iv.company_name }}</small></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No interviews scheduled. Add rounds on an application's edit page.</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Recent applications</h2>
+    <a href="{{ url_for('applications') }}">View all</a>
+  </div>
+  {% if recent %}
+  <table>
+    <thead><tr><th>Date</th><th>Job</th><th>Company</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for a in recent %}
+      <tr>
+        <td>{{ a.application_date | datefmt }}</td>
+        <td><a href="{{ url_for('application_detail', application_id=a.application_id) }}">{{ a.job_title }}</a></td>
+        <td>{{ a.company_name }}</td>
+        <td><span class="badge status-{{ a.status|lower }}">{{ a.status }}</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">No applications yet. <a href="{{ url_for('application_new') }}">Add your first one.</a></p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Applications</h1>
+  <a class="btn" href="{{ url_for('application_new') }}">+ Add Application</a>
+</div>
+
+<div class="tabs">
+  <a href="{{ url_for('applications', q=search or None) }}" class="{{ 'active' if not status }}">All</a>
+  {% for s in statuses %}
+    <a href="{{ url_for('applications', status=s, q=search or None) }}" class="{{ 'active' if s == status }}">{{ s }}</a>
+  {% endfor %}
+</div>
+
+<form class="toolbar" method="get">
+  {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  <input type="search" name="q" value="{{ search }}" placeholder="Search job title or company">
+  <button class="btn btn-ghost" type="submit">Search</button>
+  {% if search %}<a href="{{ url_for('applications', status=status or None) }}">Clear</a>{% endif %}
+</form>
+
+<div class="card flush">
+{% if applications %}
+  <table>
+    <thead><tr><th>Applied</th><th>Job</th><th>Company</th><th>Status</th><th>Resume</th><th>Cover letter</th><th class="num-col">Interviews</th><th></th></tr></thead>
+    <tbody>
+    {% for a in applications %}
+      <tr>
+        <td class="nowrap">{{ a.application_date | datefmt }}</td>
+        <td><a href="{{ url_for('application_detail', application_id=a.application_id) }}"><strong>{{ a.job_title }}</strong></a></td>
+        <td>{{ a.company_name }}</td>
+        <td><span class="badge status-{{ a.status|lower }}">{{ a.status }}</span></td>
+        <td>{{ a.resume_version or '' }}</td>
+        <td>{{ 'Yes' if a.cover_letter_sent else 'No' }}</td>
+        <td class="num-col">{{ a.interview_data|length }}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('application_edit', application_id=a.application_id) }}">Edit</a>
+          <a class="danger" href="{{ url_for('application_delete', application_id=a.application_id) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty">No applications found.</p>
+{% endif %}
+</div>
+{% endblock %}
