@@ -101,42 +101,37 @@ CREATE INDEX idx_apps_status        ON applications(status);
 CREATE INDEX idx_contacts_company   ON contacts(company_id);
 
 -- =============================================================
--- Sample data
+-- Sample data: companies I am targeting
 -- =============================================================
 INSERT INTO companies (company_name, industry, website, city, state, notes) VALUES
-('TechCorp',          'Software',       'https://www.techcorp.example',   'Miami',          'FL', 'Mid-size SaaS company. Strong intern program.'),
-('DataCo',            'Analytics',      'https://www.dataco.example',     'Fort Lauderdale','FL', 'Data consulting firm. Hybrid schedule.'),
-('SkyLine Aviation',  'Aerospace',      'https://www.skyline.example',    'Doral',          'FL', 'MRO provider. Looking for IT security help.'),
-('SecureNet',         'Cybersecurity',  'https://www.securenet.example',  'Tampa',          'FL', 'Managed security services. SOC roles open.'),
-('CloudNine Health',  'Healthcare IT',  'https://www.cloudnine.example',  'Orlando',        'FL', NULL);
+('NextEra Energy', 'Energy / Utilities', 'https://www.nexteraenergy.com', 'Juno Beach', 'FL', 'Largest utility in Florida. OT and grid security work. Close to home.'),
+('Epic Systems',   'Healthcare IT',      'https://careers.epic.com',      'Verona',     'WI', 'EHR software. Relocation required. Ties to my hospital experience.'),
+('Capital One',    'Financial Services', 'https://www.capitalonecareers.com', 'McLean', 'VA', 'Large cyber org and a Technology Development Program for new grads.'),
+('CrowdStrike',    'Cybersecurity',      'https://www.crowdstrike.com/en-us/', 'Austin', 'TX', 'Falcon platform. Many remote roles.'),
+('Data443',        'Cybersecurity',      'https://data443.com/cyren-threat-intelligence/', 'Research Triangle Park', 'NC', 'Cyren threat intelligence products.');
 
 INSERT INTO jobs (company_id, job_title, job_type, salary_min, salary_max, job_url, date_posted, requirements) VALUES
-(1, 'Software Developer',        'Full-time',  75000,  95000, 'https://www.techcorp.example/careers/101', '2026-09-15', JSON_ARRAY('Python', 'SQL', 'Flask')),
-(2, 'Data Analyst',              'Full-time',  65000,  80000, 'https://www.dataco.example/jobs/22',       '2026-09-20', JSON_ARRAY('Python', 'SQL', 'Tableau')),
-(4, 'SOC Analyst I',             'Full-time',  60000,  75000, 'https://www.securenet.example/soc',        '2026-10-01', JSON_ARRAY('SIEM', 'Linux', 'Networking', 'Incident Response')),
-(3, 'IT Security Intern',        'Internship', 40000,  45000, 'https://www.skyline.example/intern',       '2026-10-05', JSON_ARRAY('Networking', 'Linux', 'Python')),
-(5, 'Backend Engineer',          'Contract',   90000, 120000, 'https://www.cloudnine.example/backend',    '2026-10-12', JSON_ARRAY('Python', 'Flask', 'MySQL', 'Docker', 'AWS')),
-(1, 'QA Automation Engineer',    'Part-time',  35000,  50000, NULL,                                       '2026-10-20', JSON_ARRAY('Python', 'Selenium', 'Git'));
+(1, 'Cybersecurity Analyst',              'Full-time', NULL, NULL, 'https://www.nexteraenergy.com', '2026-10-01', JSON_ARRAY('SIEM', 'Networking', 'Incident Response', 'Python', 'NERC CIP')),
+(2, 'Software Developer',                 'Full-time', NULL, NULL, 'https://careers.epic.com',      '2026-09-15', JSON_ARRAY('Python', 'SQL', 'Flask')),
+(3, 'Cyber Security Analyst',             'Full-time', NULL, NULL, 'https://www.capitalonecareers.com', '2026-10-10', JSON_ARRAY('Python', 'AWS', 'SQL', 'Splunk')),
+(4, 'Security Operations Center Analyst', 'Full-time', NULL, NULL, 'https://www.crowdstrike.com/en-us/', '2026-10-05', JSON_ARRAY('EDR', 'Linux', 'Threat Hunting', 'Incident Response')),
+(5, 'Threat Intelligence Analyst',        'Full-time', NULL, NULL, 'https://data443.com/cyren-threat-intelligence/', '2026-10-20', JSON_ARRAY('Threat Intelligence', 'Python', 'Malware Analysis', 'Networking')),
+(3, 'Data Analyst',                       'Internship', NULL, NULL, 'https://www.capitalonecareers.com', '2026-09-20', JSON_ARRAY('Python', 'SQL', 'Tableau'));
 
 INSERT INTO applications (job_id, application_date, status, resume_version, cover_letter_sent, interview_data) VALUES
-(1, '2026-09-18', 'Interview', 'v3-software', TRUE,
+(1, '2026-10-03', 'Interview', 'v3-security', TRUE,
     JSON_ARRAY(
-        JSON_OBJECT('date', '2026-09-30', 'round', 'Phone Screen', 'interviewer', 'Maria Lopez', 'notes', 'Asked about Flask projects'),
-        JSON_OBJECT('date', '2026-10-10', 'round', 'Technical',    'interviewer', 'Dev Team',    'notes', 'SQL joins and a live coding task'),
+        JSON_OBJECT('date', '2026-10-15', 'round', 'Phone Screen', 'interviewer', 'Recruiter', 'notes', 'Asked about FIU cybersecurity coursework'),
         -- dated relative to today so the dashboard always shows an upcoming interview
         JSON_OBJECT('date', DATE_FORMAT(CURDATE() + INTERVAL 7 DAY, '%Y-%m-%d'),
-                    'round', 'Final Round', 'interviewer', 'VP Engineering', 'notes', 'Prepare system design examples')
+                    'round', 'Technical', 'interviewer', 'Security Team', 'notes', 'Review incident response and networking')
     )),
-(2, '2026-09-22', 'Screening', 'v2-data',     FALSE, JSON_ARRAY()),
-(3, '2026-10-03', 'Applied',   'v3-security', TRUE,  JSON_ARRAY()),
-(4, '2026-10-06', 'Offer',     'v3-security', TRUE,
-    JSON_ARRAY(
-        JSON_OBJECT('date', '2026-10-15', 'round', 'Panel', 'interviewer', 'Kevin Brooks', 'notes', 'Offer extended Oct 20')
-    )),
-(6, '2026-10-22', 'Rejected',  'v1-general',  FALSE, JSON_ARRAY());
+(2, '2026-09-18', 'Screening', 'v3-software', FALSE, JSON_ARRAY()),
+(3, '2026-10-12', 'Applied',   'v3-security', TRUE,  JSON_ARRAY()),
+(4, '2026-10-07', 'Rejected',  'v2-security', FALSE, JSON_ARRAY()),
+(5, '2026-10-22', 'Applied',   'v3-security', TRUE,  JSON_ARRAY());
 
 INSERT INTO contacts (company_id, contact_name, title, email, phone, linkedin_url, notes) VALUES
-(1, 'Maria Lopez',   'Technical Recruiter',   'maria.lopez@techcorp.example', '305-555-0142', 'https://www.linkedin.com/in/example-maria', 'Met at FIU career fair'),
-(2, 'James Carter',  'Hiring Manager',        'jcarter@dataco.example',       '954-555-0199', NULL,                                       'Referral from NSBE alum'),
-(3, 'Kevin Brooks',  'IT Director',           'kbrooks@skyline.example',      '786-555-0110', 'https://www.linkedin.com/in/example-kevin', NULL),
-(4, 'Aisha Grant',   'Talent Acquisition',    'agrant@securenet.example',     NULL,           NULL,                                       'Follow up in two weeks');
+(1, 'NextEra Recruiting',       'University Recruiting', NULL, NULL, NULL, 'Replace with a real contact'),
+(3, 'Capital One Campus Team',  'Campus Recruiting',     NULL, NULL, NULL, 'Replace with a real contact'),
+(4, 'CrowdStrike Talent Team',  'Talent Acquisition',    NULL, NULL, NULL, 'Replace with a real contact');
